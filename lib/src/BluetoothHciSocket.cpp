@@ -1,5 +1,5 @@
 /*
- * Java fork of node-bluetooth-hci-socket 0.4.2 - BluetoothHciSocket.cpp (c5d7f84 on 26 Oct 2015)
+ * JNI (Java) fork of node-bluetooth-hci-socket 0.4.2 - BluetoothHciSocket.cpp (c5d7f84 on 26 Oct 2015)
  *
  * Copyright (c) 2016, Martin Petzold
  *
