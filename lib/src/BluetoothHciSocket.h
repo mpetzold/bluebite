@@ -73,15 +73,16 @@ private:
 extern "C" {
 #endif
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_newInstance(JNIEnv *, jobject);
-JNIEXPORT jint JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *, jobject, jint);
-JNIEXPORT jint JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *, jobject, jint);
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_bindControl(JNIEnv *, jobject);
-JNIEXPORT jboolean JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_isDevUp(JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_setFilter(JNIEnv *, jobject, jbyteArray);
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_start(JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_stop(JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_write(JNIEnv *, jobject, jbyteArray);
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_newInstance(JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *, jobject, jint);
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_bindControl(JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_hcisocket_BluetoothHciSocket_isDevUp(JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_setFilter(JNIEnv *, jobject, jbyteArray);
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_start(JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_stop(JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_write(JNIEnv *, jobject, jbyteArray);
 
 char* as_char_array(JNIEnv *, jbyteArray);
 

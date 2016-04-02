@@ -370,39 +370,43 @@ void BluetoothHciSocket::PollCallback(uv_poll_t* handle, int status, int events)
 
 static BluetoothHciSocket* p;
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_newInstance(JNIEnv *env, jobject thisObj) {
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_newInstance(JNIEnv *env, jobject thisObj) {
   p = new BluetoothHciSocket(env, thisObj);
 }
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_start(JNIEnv *env, jobject thisObj) {
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_start(JNIEnv *env, jobject thisObj) {
   p->start();
 }
 
-JNIEXPORT jint JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *env, jobject thisObj, jint *pDevId) {
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *env, jobject thisObj) {
+  return p->bindRaw(NULL);
+}
+
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *env, jobject thisObj, jint *pDevId) {
   return p->bindRaw(pDevId);
 }
 
-JNIEXPORT jint JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *env, jobject thisObj, jint *pDevId) {
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *env, jobject thisObj, jint *pDevId) {
   return p->bindUser(pDevId);
 }
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_bindControl(JNIEnv *env, jobject thisObj) {
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_bindControl(JNIEnv *env, jobject thisObj) {
   p->bindControl();
 }
 
-JNIEXPORT jboolean JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_isDevUp(JNIEnv *env, jobject thisObj) {
+JNIEXPORT jboolean JNICALL Java_hcisocket_BluetoothHciSocket_isDevUp(JNIEnv *env, jobject thisObj) {
   return p->isDevUp();
 }
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_setFilter(JNIEnv *env, jobject thisObj, jbyteArray data) {
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_setFilter(JNIEnv *env, jobject thisObj, jbyteArray data) {
   p->setFilter(as_char_array(env, data), env->GetArrayLength(data));
 }
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_stop(JNIEnv *env, jobject thisObj) {
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_stop(JNIEnv *env, jobject thisObj) {
   p->stop();
 }
 
-JNIEXPORT void JNICALL Java_technology_tavla_os_system_bluetooth_hcisocket_BluetoothHciSocket_write(JNIEnv *env, jobject thisObj, jbyteArray data) {
+JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_write(JNIEnv *env, jobject thisObj, jbyteArray data) {
   p->write_(as_char_array(env, data), env->GetArrayLength(data));
 }
 
