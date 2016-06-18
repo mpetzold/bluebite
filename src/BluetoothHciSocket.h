@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
  
-#ifndef _Included_BluetoothHciSocket
-#define _Included_BluetoothHciSocket
+#ifndef ___BLUETOOTH_HCI_SOCKET_H___
+#define ___BLUETOOTH_HCI_SOCKET_H___
 
 #include <map>
 
@@ -70,11 +70,11 @@ private:
 };
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_newInstance(JNIEnv *, jobject);
-JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *, jobject);
 JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *, jobject, jint);
 JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *, jobject, jint);
 JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_bindControl(JNIEnv *, jobject);

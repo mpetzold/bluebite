@@ -28,9 +28,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <uv.h>
-#include <jni.h>
-
 #include "BluetoothHciSocket.h"
 
 #define BTPROTO_L2CAP 0
@@ -135,11 +132,6 @@ BluetoothHciSocket::BluetoothHciSocket(JNIEnv *env, jobject thisObj) {
   this->activityClass = (jclass)env->NewGlobalRef(clazz);
   this->activityObj = env->NewGlobalRef(thisObj);
 
-  // TEST
-  jmethodID method = env->GetMethodID((jclass)this->activityClass, "emit", "([B)V");
-  env->CallVoidMethod((jobject)this->activityObj, method);
-  // END
-
   this->_socket = socket(AF_BLUETOOTH, SOCK_RAW | SOCK_CLOEXEC, BTPROTO_HCI);
 
   uv_poll_init(uv_default_loop(), &this->_pollHandle, this->_socket);
@@ -236,11 +228,11 @@ void BluetoothHciSocket::poll() {
     JNIEnv *env;
     this->javaVM->AttachCurrentThread((void**)&env, NULL);
 
-    jbyteArray byteArray = env->NewByteArray (length);
-    env->SetByteArrayRegion (byteArray, 0, length, reinterpret_cast<jbyte*>(data));
+    jbyteArray byteArray = env->NewByteArray(length);
+    env->SetByteArrayRegion(byteArray, 0, length, reinterpret_cast<jbyte*>(data));
 
     jmethodID method = env->GetMethodID((jclass)this->activityClass, "emit", "([B)V");
-    env->CallVoidMethod((jobject)this->activityObj, method, byteArray);
+    env->CallVoidMethod((jobject)this->activityObj, method, byteArray, 0, length);
   }
 }
 
@@ -255,28 +247,14 @@ void BluetoothHciSocket::write_(char* data, int length) {
 }
 
 void BluetoothHciSocket::emitErrnoError() {
-  /*Nan::HandleScope scope;
-
-  Local<Object> globalObj = Nan::GetCurrentContext()->Global();
-  Local<Function> errorConstructor = Local<Function>::Cast(globalObj->Get(Nan::New("Error").ToLocalChecked()));
-
-  Local<Value> constructorArgs[1] = {
-    Nan::New(strerror(errno)).ToLocalChecked()
-  };
-
-  Local<Value> error = errorConstructor->NewInstance(1, constructorArgs);
-
-  Local<Value> argv[2] = {
-    Nan::New("error").ToLocalChecked(),
-    error
-  };
-
-  Nan::MakeCallback(Nan::New<Object>(this->This), Nan::New("emit").ToLocalChecked(), 2, argv);*/
-
-  /*JNIEnv *env;
-  javaVM->AttachCurrentThread(&env, NULL);
-  jmethodID method = env->GetMethodID(activityClass, "error", "([B)V");
-  env->CallVoidMethod(activityObj, method);*/
+  JNIEnv *env;
+  this->javaVM->AttachCurrentThread((void**)&env, NULL);
+  
+  char* error = strerror(errno);
+  jstring errorString = env->NewStringUTF(error);
+  
+  jmethodID method = env->GetMethodID((jclass)this->activityClass, "error", "(Ljava/lang/String;)V");
+  env->CallVoidMethod((jobject)this->activityObj, method, errorString);
 }
 
 int BluetoothHciSocket::devIdFor(int* pDevId, bool isUp) {
@@ -378,16 +356,12 @@ JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_start(JNIEnv *env, jobj
   p->start();
 }
 
-JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *env, jobject thisObj) {
-  return p->bindRaw(NULL);
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *env, jobject thisObj, jint pDevId) {
+  return p->bindRaw(&pDevId);
 }
 
-JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindRaw(JNIEnv *env, jobject thisObj, jint *pDevId) {
-  return p->bindRaw(pDevId);
-}
-
-JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *env, jobject thisObj, jint *pDevId) {
-  return p->bindUser(pDevId);
+JNIEXPORT jint JNICALL Java_hcisocket_BluetoothHciSocket_bindUser(JNIEnv *env, jobject thisObj, jint pDevId) {
+  return p->bindUser(&pDevId);
 }
 
 JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_bindControl(JNIEnv *env, jobject thisObj) {
@@ -399,7 +373,9 @@ JNIEXPORT jboolean JNICALL Java_hcisocket_BluetoothHciSocket_isDevUp(JNIEnv *env
 }
 
 JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_setFilter(JNIEnv *env, jobject thisObj, jbyteArray data) {
-  p->setFilter(as_char_array(env, data), env->GetArrayLength(data));
+  jbyte* dataArray = env->GetByteArrayElements(data, NULL);
+  p->setFilter((char*)dataArray, env->GetArrayLength(data));
+  env->ReleaseByteArrayElements(data, dataArray, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_stop(JNIEnv *env, jobject thisObj) {
@@ -407,12 +383,7 @@ JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_stop(JNIEnv *env, jobje
 }
 
 JNIEXPORT void JNICALL Java_hcisocket_BluetoothHciSocket_write(JNIEnv *env, jobject thisObj, jbyteArray data) {
-  p->write_(as_char_array(env, data), env->GetArrayLength(data));
-}
-
-char* as_char_array(JNIEnv *env, jbyteArray array) {
-  int len = env->GetArrayLength(array);
-  char* buf = new char[len];
-  env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte*>(buf));
-  return buf;
+  jbyte* dataArray = env->GetByteArrayElements(data, NULL);
+  p->write_((char*)dataArray, env->GetArrayLength(data));
+  env->ReleaseByteArrayElements(data, dataArray, JNI_ABORT);
 }
